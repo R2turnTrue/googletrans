@@ -1,6 +1,5 @@
 import qs from "qs";
 import axios from "axios";
-import adapter from "axios/lib/adapters/http";
 import { isSupported, getCode } from "./languages";
 import { getToken } from "./googleToken";
 import { getUserAgent } from "./utils";
@@ -111,14 +110,15 @@ async function translate(text: string | string[], opts?: Options) {
   };
 
   const res = await axios({
-    adapter,
     url: URL,
     params: PARAMS,
     headers: HEADERS,
     timeout: 3 * 1000,
-    paramsSerializer: (params) => {
-      return qs.stringify(params, { arrayFormat: "repeat" });
-    },
+    paramsSerializer: {
+      serialize: (params) => {
+        return qs.stringify(params, { arrayFormat: "repeat" });
+      }
+    }
   });
   return getResult(res);
 }
